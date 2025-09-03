@@ -77,6 +77,8 @@ const TrailerModal: React.FC<TrailerModalProps> = ({ media, isOpen, onClose }) =
             <div className="text-center py-12 text-white/60">
               <Play size={48} className="mx-auto mb-4 opacity-50" />
               <p>No trailers available for this title</p>
+            </div>
+          ) : (
               selectedTrailer && (
                 <div className="aspect-video bg-black rounded-lg overflow-hidden">
                   <iframe
@@ -95,41 +97,32 @@ const TrailerModal: React.FC<TrailerModalProps> = ({ media, isOpen, onClose }) =
           {trailers.length > 0 && (
             <div className="w-80 border-l border-gray-800 bg-gray-900/50">
               <div className="p-4 border-b border-gray-800">
-                    </p>
-                  </div>
-                )}
+                <h3 className="text-white font-medium">Available Trailers ({trailers.length})</h3>
               </div>
               
-              {/* Trailer list - Right side */}
-              <div className="w-80 border-l border-gray-800 bg-gray-900/50">
-                <div className="p-4 border-b border-gray-800">
-                  <h3 className="text-white font-medium">Available Trailers ({trailers.length})</h3>
-                </div>
-                
-                <div className="overflow-y-auto h-full pb-20">
-                  <div className="p-2 space-y-2">
-                    {trailers.map((trailer) => (
-                      <button
-                        key={trailer.id}
-                        className={`w-full text-left p-3 rounded-lg transition-all ${
-                          selectedTrailer?.id === trailer.id 
-                            ? 'bg-red-600 text-white' 
-                            : 'bg-gray-800 hover:bg-gray-700 text-white'
-                        }`}
-                        onClick={() => setSelectedTrailer(trailer)}
-                      >
-                        <div className="space-y-1">
-                          <div className="font-medium text-sm line-clamp-2">{trailer.name}</div>
-                          <div className="text-xs opacity-70">
-                            {trailer.type} • {trailer.official ? 'Official' : 'Fan Made'}
-                          </div>
+              <div className="overflow-y-auto h-full pb-20">
+                <div className="p-2 space-y-2">
+                  {trailers.map((trailer) => (
+                    <button
+                      key={trailer.id}
+                      className={`w-full text-left p-3 rounded-lg transition-all ${
+                        selectedTrailer?.id === trailer.id 
+                          ? 'bg-red-600 text-white' 
+                          : 'bg-gray-800 hover:bg-gray-700 text-white'
+                      }`}
+                      onClick={() => setSelectedTrailer(trailer)}
+                    >
+                      <div className="space-y-1">
+                        <div className="font-medium text-sm line-clamp-2">{trailer.name}</div>
+                        <div className="text-xs opacity-70">
+                          {trailer.type} • {trailer.official ? 'Official' : 'Fan Made'}
                         </div>
-                      </button>
-                    ))}
-                  </div>
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
       </DialogContent>
