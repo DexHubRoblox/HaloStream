@@ -51,9 +51,9 @@ const TrailerModal: React.FC<TrailerModalProps> = ({ media, isOpen, onClose }) =
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-full bg-black border-gray-800">
+      <DialogContent className="max-w-5xl w-full h-[90vh] bg-black border-gray-800 p-0 overflow-hidden">
         <DialogHeader>
-          <DialogTitle className="text-white flex items-center justify-between">
+          <DialogTitle className="text-white flex items-center justify-between p-6 pb-0">
             <span>{title} - Trailers</span>
             <Button
               variant="ghost"
@@ -66,7 +66,9 @@ const TrailerModal: React.FC<TrailerModalProps> = ({ media, isOpen, onClose }) =
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4">
+        <div className="flex h-full">
+          {/* Main trailer player */}
+          <div className="flex-1 p-6">
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <Loader size="large" />
@@ -75,11 +77,7 @@ const TrailerModal: React.FC<TrailerModalProps> = ({ media, isOpen, onClose }) =
             <div className="text-center py-12 text-white/60">
               <Play size={48} className="mx-auto mb-4 opacity-50" />
               <p>No trailers available for this title</p>
-            </div>
-          ) : (
-            <>
-              {/* Main trailer player */}
-              {selectedTrailer && (
+              selectedTrailer && (
                 <div className="aspect-video bg-black rounded-lg overflow-hidden">
                   <iframe
                     src={getYouTubeEmbedUrl(selectedTrailer.key)}
@@ -89,35 +87,48 @@ const TrailerModal: React.FC<TrailerModalProps> = ({ media, isOpen, onClose }) =
                     title={selectedTrailer.name}
                   />
                 </div>
+              )
               )}
+          </div>
+          
+          {/* Trailer selection sidebar */}
+          {trailers.length > 0 && (
+            <div className="w-80 border-l border-gray-800 bg-gray-900/50">
+              <div className="p-4 border-b border-gray-800">
+                    </p>
+                  </div>
+                )}
+              </div>
               
-              {/* Trailer selection */}
-              {trailers.length > 1 && (
-                <div className="space-y-2">
-                  <h3 className="text-white font-medium">Available Trailers:</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {/* Trailer list - Right side */}
+              <div className="w-80 border-l border-gray-800 bg-gray-900/50">
+                <div className="p-4 border-b border-gray-800">
+                  <h3 className="text-white font-medium">Available Trailers ({trailers.length})</h3>
+                </div>
+                
+                <div className="overflow-y-auto h-full pb-20">
+                  <div className="p-2 space-y-2">
                     {trailers.map((trailer) => (
-                      <Button
+                      <button
                         key={trailer.id}
-                        variant={selectedTrailer?.id === trailer.id ? "default" : "outline"}
-                        className={`justify-start text-left h-auto p-3 ${
+                        className={`w-full text-left p-3 rounded-lg transition-all ${
                           selectedTrailer?.id === trailer.id 
-                            ? 'bg-red-600 hover:bg-red-700 text-white' 
-                            : 'bg-gray-800 hover:bg-gray-700 text-white border-gray-600'
+                            ? 'bg-red-600 text-white' 
+                            : 'bg-gray-800 hover:bg-gray-700 text-white'
                         }`}
                         onClick={() => setSelectedTrailer(trailer)}
                       >
-                        <div>
-                          <div className="font-medium">{trailer.name}</div>
+                        <div className="space-y-1">
+                          <div className="font-medium text-sm line-clamp-2">{trailer.name}</div>
                           <div className="text-xs opacity-70">
                             {trailer.type} • {trailer.official ? 'Official' : 'Fan Made'}
                           </div>
                         </div>
-                      </Button>
+                      </button>
                     ))}
                   </div>
                 </div>
-              )}
+              </div>
             </>
           )}
         </div>
