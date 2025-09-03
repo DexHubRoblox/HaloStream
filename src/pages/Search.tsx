@@ -121,8 +121,8 @@ const Search: React.FC = () => {
     }
     
     const filters = [];
-    if (genre) filters.push(`Genre: ${genre}`);
-    if (mediaType) filters.push(`Type: ${mediaType === 'movie' ? 'Movies' : 'TV Shows'}`);
+    if (genre && genre !== 'all-genres') filters.push(`Genre: ${genre}`);
+    if (mediaType && mediaType !== 'all-types') filters.push(`Type: ${mediaType === 'movie' ? 'Movies' : 'TV Shows'}`);
     if (yearMin || yearMax) {
       if (yearMin && yearMax) filters.push(`Year: ${yearMin}-${yearMax}`);
       else if (yearMin) filters.push(`Year: ${yearMin}+`);

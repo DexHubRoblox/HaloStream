@@ -182,6 +182,7 @@ export const advancedSearch = async (params: {
   let endpoint = `/discover/${discoverType}?api_key=${API_KEY}&sort_by=${sortBy}&page=${page}`;
 
   if (genre) {
+    if (genre === 'all-genres') return;
     const genreObj = genres.find(g => g.name === genre);
     if (genreObj) {
       const genreId = discoverType === 'movie' ? genreObj.movieGenreId : genreObj.tvGenreId;

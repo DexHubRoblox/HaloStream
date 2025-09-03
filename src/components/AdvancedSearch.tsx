@@ -31,8 +31,8 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onClose }) => {
     const params = new URLSearchParams();
     
     if (query.trim()) params.set('q', query.trim());
-    if (selectedGenre) params.set('genre', selectedGenre);
-    if (mediaType) params.set('type', mediaType);
+    if (selectedGenre && selectedGenre !== 'all-genres') params.set('genre', selectedGenre);
+    if (mediaType && mediaType !== 'all-types') params.set('type', mediaType);
     if (yearRange[0] !== 1990 || yearRange[1] !== 2024) {
       params.set('year_min', yearRange[0].toString());
       params.set('year_max', yearRange[1].toString());
@@ -49,8 +49,8 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onClose }) => {
 
   const handleReset = () => {
     setQuery('');
-    setSelectedGenre('');
-    setMediaType('');
+    setSelectedGenre('all-genres');
+    setMediaType('all-types');
     setYearRange([1990, 2024]);
     setRatingRange([0, 10]);
     setSortBy('popularity.desc');
@@ -96,7 +96,7 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onClose }) => {
               <SelectValue placeholder="Any genre" />
             </SelectTrigger>
             <SelectContent className="bg-gray-800 border-gray-600">
-              <SelectItem value="">Any genre</SelectItem>
+              <SelectItem value="all-genres">Any genre</SelectItem>
               {genres.map((genre) => (
                 <SelectItem key={genre.id} value={genre.name} className="text-white">
                   {genre.name}
@@ -114,7 +114,7 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onClose }) => {
               <SelectValue placeholder="Movies & TV Shows" />
             </SelectTrigger>
             <SelectContent className="bg-gray-800 border-gray-600">
-              <SelectItem value="" className="text-white">Movies & TV Shows</SelectItem>
+              <SelectItem value="all-types" className="text-white">Movies & TV Shows</SelectItem>
               <SelectItem value="movie" className="text-white">Movies Only</SelectItem>
               <SelectItem value="tv" className="text-white">TV Shows Only</SelectItem>
             </SelectContent>
