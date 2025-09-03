@@ -95,7 +95,13 @@ const Search: React.FC = () => {
           </div>
         ) : (
           <MediaGrid
-            title={`Found ${results.length} ${isGenreSearch ? 'genre' : ''} results`}
+            title={
+              results.length === 0 
+                ? "No results found" 
+                : isGenreSearch 
+                  ? `${results.length} movies and shows in this genre`
+                  : `${results.length} search results`
+            }
             medias={results}
           />
         )}
