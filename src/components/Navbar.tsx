@@ -83,7 +83,7 @@ const Navbar: React.FC = () => {
             
             <button 
               onClick={() => setAdvancedSearchOpen(true)}
-              className="p-2 rounded-full transition-all hover:bg-foreground/10"
+              className="p-2 rounded-full transition-all hover:bg-foreground/10 text-foreground"
               aria-label="Advanced Search"
             >
               <Filter size={20} className="text-foreground" />
@@ -91,7 +91,7 @@ const Navbar: React.FC = () => {
             
             <button 
               onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 rounded-full transition-all hover:bg-foreground/10"
+              className="p-2 rounded-full transition-all hover:bg-foreground/10 text-foreground"
               aria-label="Search"
             >
               <Search size={20} className="text-foreground" />
@@ -100,7 +100,7 @@ const Navbar: React.FC = () => {
             <div className="md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-full transition-all hover:bg-foreground/10"
+                className="p-2 rounded-full transition-all hover:bg-foreground/10 text-foreground"
                 aria-label="Toggle menu"
               >
                 {mobileMenuOpen ? (

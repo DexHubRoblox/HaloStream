@@ -138,7 +138,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
             <button
               type="button"
               onClick={handleClearSearch}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <X size={18} />
             </button>

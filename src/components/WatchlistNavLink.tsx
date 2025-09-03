@@ -29,9 +29,9 @@ const WatchlistNavLink: React.FC = () => {
   return (
     <Link
       to="/watchlist"
-      className="relative rounded-full p-2 hover:bg-white/10 transition-colors"
+      className="relative rounded-full p-2 hover:bg-foreground/10 transition-colors text-foreground"
     >
-      <Bookmark className="h-5 w-5" />
+      <Bookmark className="h-5 w-5 text-foreground" />
       {count > 0 && (
         <span className="absolute -top-1 -right-1 bg-primary text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
           {count > 99 ? '99+' : count}

@@ -48,7 +48,7 @@ const ThemeToggle: React.FC = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="rounded-full text-white hover:bg-white/10"
+          className="rounded-full text-foreground hover:bg-foreground/10"
         >
           {getIcon()}
         </Button>
