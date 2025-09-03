@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { searchMedia, searchByGenreName, Media } from '@/utils/api';
-import { genres } from '@/utils/genres';
+import { genres, detectGenreFromQuery } from '@/utils/genres';
 import Navbar from '@/components/Navbar';
 import MediaGrid from '@/components/MediaGrid';
 import Loader from '@/components/Loader';
@@ -31,11 +31,14 @@ const Search: React.FC = () => {
     if (query) {
       setLoading(true);
       
-      // Check if query matches a genre name
-      const matchingGenre = genres.find(genre => 
-        genre.name.toLowerCase() === query.toLowerCase() ||
-        genre.name.toLowerCase().includes(query.toLowerCase())
-      );
+      // Check if query matches a genre name or keyword
+      const detectedGenre = detectGenreFromQuery(query);
+      const matchingGenre = detectedGenre ? 
+        genres.find(genre => genre.name === detectedGenre) : 
+        genres.find(genre => 
+          genre.name.toLowerCase() === query.toLowerCase() ||
+          genre.name.toLowerCase().includes(query.toLowerCase())
+        );
       
       if (matchingGenre) {
         setIsGenreSearch(true);

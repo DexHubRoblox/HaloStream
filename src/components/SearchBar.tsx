@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search as SearchIcon, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Media, searchMedia, getImageUrl } from '@/utils/api';
-import { genres } from '@/utils/genres';
+import { genres, detectGenreFromQuery } from '@/utils/genres';
 
 interface SearchBarProps {
   onClose?: () => void;
@@ -42,11 +42,23 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
       if (query.trim().length >= 2) {
+        // Check if query matches genre keywords
+        const detectedGenre = detectGenreFromQuery(query);
+        
         // Check for genre matches
-        const matchingGenres = genres
-          .filter(genre => genre.name.toLowerCase().includes(query.toLowerCase()))
-          .map(genre => genre.name)
-          .slice(0, 3);
+        let matchingGenres: string[] = [];
+        
+        if (detectedGenre) {
+          // If we detected a genre from keywords, show that genre
+          matchingGenres = [detectedGenre];
+        } else {
+          // Otherwise, check for direct genre name matches
+          matchingGenres = genres
+            .filter(genre => genre.name.toLowerCase().includes(query.toLowerCase()))
+            .map(genre => genre.name)
+            .slice(0, 3);
+        }
+        
         setGenreSuggestions(matchingGenres);
         
         performSearch();

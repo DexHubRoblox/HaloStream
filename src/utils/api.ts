@@ -1,4 +1,5 @@
 import { toast } from "@/components/ui/use-toast";
+import { detectGenreFromQuery, genres } from './genres';
 
 // TMDB API key
 const API_KEY = "71fdb081b0133511ac14ac0cc10fd307";
@@ -137,6 +138,10 @@ export const searchMedia = (query: string, page: number = 1) => {
 
 // Search by genre name
 export const searchByGenreName = async (genreName: string, page: number = 1): Promise<SearchResults> => {
+  // First try to detect genre from keywords
+  const detectedGenre = detectGenreFromQuery(genreName);
+  const searchGenreName = detectedGenre || genreName;
+  
   // First, try to find matching genre
   const [movieGenres, tvGenres] = await Promise.all([
     getGenres('movie'),
@@ -145,7 +150,7 @@ export const searchByGenreName = async (genreName: string, page: number = 1): Pr
   
   const allGenres = [...movieGenres.genres, ...tvGenres.genres];
   const matchingGenre = allGenres.find(genre => 
-    genre.name.toLowerCase().includes(genreName.toLowerCase())
+    genre.name.toLowerCase().includes(searchGenreName.toLowerCase())
   );
   
   if (matchingGenre) {
@@ -167,7 +172,7 @@ export const searchByGenreName = async (genreName: string, page: number = 1): Pr
   }
   
   // Fallback to regular search
-  return searchMedia(genreName, page);
+  return searchMedia(searchGenreName, page);
 };
 // Get image URL
 export const getImageUrl = (path: string | null, size: "original" | "w500" | "w780" = "w500") => {
