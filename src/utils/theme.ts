@@ -24,11 +24,14 @@ export const setTheme = (theme: Theme): void => {
 export const applyTheme = (theme: Theme): void => {
   const root = document.documentElement;
   
+  // Remove existing theme classes
+  root.classList.remove('dark', 'light');
+  
   if (theme === 'system') {
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    root.classList.toggle('dark', systemTheme === 'dark');
+    root.classList.add(systemTheme);
   } else {
-    root.classList.toggle('dark', theme === 'dark');
+    root.classList.add(theme);
   }
 };
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, Menu, X, Filter } from 'lucide-react';
@@ -65,10 +64,10 @@ const Navbar: React.FC = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-sm font-medium transition-all duration-200 hover:text-white ${
+                className={`text-sm font-medium transition-all duration-200 hover:text-foreground ${
                   isActive(item.href) 
-                    ? 'text-white font-bold' 
-                    : 'text-white/80'
+                    ? 'text-foreground font-bold' 
+                    : 'text-foreground/80'
                 }`}
               >
                 {item.name}
@@ -84,30 +83,30 @@ const Navbar: React.FC = () => {
             
             <button 
               onClick={() => setAdvancedSearchOpen(true)}
-              className="p-2 rounded-full transition-all hover:bg-white/10"
+              className="p-2 rounded-full transition-all hover:bg-foreground/10"
               aria-label="Advanced Search"
             >
-              <Filter size={20} className="text-white" />
+              <Filter size={20} className="text-foreground" />
             </button>
             
             <button 
               onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 rounded-full transition-all hover:bg-white/10"
+              className="p-2 rounded-full transition-all hover:bg-foreground/10"
               aria-label="Search"
             >
-              <Search size={20} className="text-white" />
+              <Search size={20} className="text-foreground" />
             </button>
             
             <div className="md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-full transition-all hover:bg-white/10"
+                className="p-2 rounded-full transition-all hover:bg-foreground/10"
                 aria-label="Toggle menu"
               >
                 {mobileMenuOpen ? (
-                  <X size={20} className="text-white" />
+                  <X size={20} className="text-foreground" />
                 ) : (
-                  <Menu size={20} className="text-white" />
+                  <Menu size={20} className="text-foreground" />
                 )}
               </button>
             </div>
@@ -117,7 +116,7 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-black/95 backdrop-blur-xl overflow-hidden animate-slide-down border-t border-white/10">
+        <div className="md:hidden bg-background/95 backdrop-blur-xl overflow-hidden animate-slide-down border-t border-border">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navigation.map((item) => (
               <Link
@@ -125,8 +124,8 @@ const Navbar: React.FC = () => {
                 to={item.href}
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
                   isActive(item.href)
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/70 hover:bg-white/5 hover:text-white'
+                    ? 'bg-accent text-accent-foreground'
+                    : 'text-foreground/70 hover:bg-accent/50 hover:text-foreground'
                 }`}
               >
                 {item.name}
@@ -136,8 +135,8 @@ const Navbar: React.FC = () => {
               to="/watchlist"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
                 isActive('/watchlist')
-                  ? 'bg-white/10 text-white'
-                  : 'text-white/70 hover:bg-white/5 hover:text-white'
+                  ? 'bg-accent text-accent-foreground'
+                  : 'text-foreground/70 hover:bg-accent/50 hover:text-foreground'
               }`}
             >
               My Watchlist
@@ -148,7 +147,7 @@ const Navbar: React.FC = () => {
 
       {/* Search Bar */}
       {searchOpen && (
-        <div className="py-4 px-4 md:px-12 bg-black/95 backdrop-blur-xl border-b border-white/10 animate-slide-down">
+        <div className="py-4 px-4 md:px-12 bg-background/95 backdrop-blur-xl border-b border-border animate-slide-down">
           <SearchBar onClose={() => setSearchOpen(false)} />
         </div>
       )}
