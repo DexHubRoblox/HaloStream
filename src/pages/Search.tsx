@@ -1,7 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { searchMedia, Media } from '@/utils/api';
+import { searchMedia, searchByGenreName, Media } from '@/utils/api';
+import { genres } from '@/utils/genres';
 import Navbar from '@/components/Navbar';
 import MediaGrid from '@/components/MediaGrid';
 import Loader from '@/components/Loader';
@@ -11,19 +12,41 @@ const Search: React.FC = () => {
   const query = new URLSearchParams(location.search).get('q') || '';
   const [results, setResults] = useState<Media[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isGenreSearch, setIsGenreSearch] = useState(false);
 
   useEffect(() => {
     if (query) {
       setLoading(true);
-      searchMedia(query)
-        .then(data => {
-          setResults(data.results);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.error('Error searching:', error);
-          setLoading(false);
-        });
+      
+      // Check if query matches a genre name
+      const matchingGenre = genres.find(genre => 
+        genre.name.toLowerCase() === query.toLowerCase() ||
+        genre.name.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      if (matchingGenre) {
+        setIsGenreSearch(true);
+        searchByGenreName(query)
+          .then(data => {
+            setResults(data.results);
+            setLoading(false);
+          })
+          .catch(error => {
+            console.error('Error searching by genre:', error);
+            setLoading(false);
+          });
+      } else {
+        setIsGenreSearch(false);
+        searchMedia(query)
+          .then(data => {
+            setResults(data.results);
+            setLoading(false);
+          })
+          .catch(error => {
+            console.error('Error searching:', error);
+            setLoading(false);
+          });
+      }
     } else {
       setResults([]);
       setLoading(false);
@@ -38,7 +61,7 @@ const Search: React.FC = () => {
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-black animate-fade-in text-white">Search Results</h1>
           <p className="text-white/70 mt-2 animate-fade-in animate-delay-100">
-            {query ? `Results for "${query}"` : 'Enter a search term'}
+            {query ? `${isGenreSearch ? 'Genre results' : 'Results'} for "${query}"` : 'Enter a search term'}
           </p>
         </div>
         
@@ -48,7 +71,7 @@ const Search: React.FC = () => {
           </div>
         ) : (
           <MediaGrid
-            title={`Found ${results.length} results`}
+            title={`Found ${results.length} ${isGenreSearch ? 'genre' : ''} results`}
             medias={results}
           />
         )}

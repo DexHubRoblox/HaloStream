@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search as SearchIcon, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Media, searchMedia, getImageUrl } from '@/utils/api';
+import { genres } from '@/utils/genres';
 
 interface SearchBarProps {
   onClose?: () => void;
@@ -12,6 +13,7 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Media[]>([]);
+  const [genreSuggestions, setGenreSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const navigate = useNavigate();
@@ -40,9 +42,17 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
       if (query.trim().length >= 2) {
+        // Check for genre matches
+        const matchingGenres = genres
+          .filter(genre => genre.name.toLowerCase().includes(query.toLowerCase()))
+          .map(genre => genre.name)
+          .slice(0, 3);
+        setGenreSuggestions(matchingGenres);
+        
         performSearch();
       } else {
         setResults([]);
+        setGenreSuggestions([]);
       }
     }, 300);
 
@@ -84,9 +94,15 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
     if (onClose) onClose();
   };
 
+  const handleGenreClick = (genreName: string) => {
+    navigate(`/search?q=${encodeURIComponent(genreName)}`);
+    setShowResults(false);
+    if (onClose) onClose();
+  };
   const handleClearSearch = () => {
     setQuery('');
     setResults([]);
+    setGenreSuggestions([]);
     inputRef.current?.focus();
   };
 
@@ -100,7 +116,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
             placeholder="Search for movies, TV shows..."
             value={query}
             onChange={handleInputChange}
-            onClick={() => results.length > 0 && setShowResults(true)}
+            onClick={() => (results.length > 0 || genreSuggestions.length > 0) && setShowResults(true)}
             className="w-full py-2 pl-10 pr-10 rounded-full bg-secondary border-white/10 text-white placeholder:text-white/50 focus-visible:ring-white/30 focus-visible:ring-offset-background focus-visible:ring-offset-2"
           />
           <div className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50">
@@ -119,12 +135,41 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
       </form>
 
       {/* Search Results Dropdown */}
-      {showResults && results.length > 0 && (
+      {showResults && (results.length > 0 || genreSuggestions.length > 0) && (
         <div 
           ref={resultsRef}
           className="absolute top-full left-0 right-0 mt-2 bg-secondary/90 backdrop-blur-lg rounded-lg shadow-lg overflow-hidden z-50 animate-scale-in border border-white/10"
         >
           <div className="max-h-80 overflow-y-auto">
+            {/* Genre Suggestions */}
+            {genreSuggestions.length > 0 && (
+              <>
+                <div className="px-3 py-2 text-xs font-semibold text-white/60 bg-white/5">
+                  GENRES
+                </div>
+                {genreSuggestions.map((genreName) => (
+                  <div
+                    key={genreName}
+                    onClick={() => handleGenreClick(genreName)}
+                    className="flex items-center p-3 hover:bg-white/10 transition-colors cursor-pointer"
+                  >
+                    <div className="flex-shrink-0 w-12 h-16 bg-gradient-to-br from-red-600 to-red-800 rounded flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">{genreName.slice(0, 2).toUpperCase()}</span>
+                    </div>
+                    <div className="ml-3 flex-1 text-left">
+                      <p className="font-medium text-white">{genreName}</p>
+                      <p className="text-xs text-white/60">Browse genre</p>
+                    </div>
+                  </div>
+                ))}
+                {results.length > 0 && (
+                  <div className="px-3 py-2 text-xs font-semibold text-white/60 bg-white/5 border-t border-white/10">
+                    MOVIES & TV SHOWS
+                  </div>
+                )}
+              </>
+            )}
+            
             {results.map((media) => {
               const posterUrl = getImageUrl(media.poster_path);
               const title = media.title || media.name || 'Unknown';

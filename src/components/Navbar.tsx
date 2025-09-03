@@ -33,6 +33,7 @@ const Navbar: React.FC = () => {
     { name: 'Home', href: '/' },
     { name: 'Movies', href: '/movies' },
     { name: 'TV Shows', href: '/tv-shows' },
+    { name: 'Genres', href: '/genres' },
   ];
 
   const isActive = (path: string) => {

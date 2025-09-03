@@ -135,6 +135,41 @@ export const searchMedia = (query: string, page: number = 1) => {
   return fetchApi<SearchResults>(`/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=${page}`);
 };
 
+// Search by genre name
+export const searchByGenreName = async (genreName: string, page: number = 1): Promise<SearchResults> => {
+  // First, try to find matching genre
+  const [movieGenres, tvGenres] = await Promise.all([
+    getGenres('movie'),
+    getGenres('tv')
+  ]);
+  
+  const allGenres = [...movieGenres.genres, ...tvGenres.genres];
+  const matchingGenre = allGenres.find(genre => 
+    genre.name.toLowerCase().includes(genreName.toLowerCase())
+  );
+  
+  if (matchingGenre) {
+    // Search for content with this genre
+    const [movieResults, tvResults] = await Promise.all([
+      fetchApi<SearchResults>(`/discover/movie?api_key=${API_KEY}&with_genres=${matchingGenre.id}&page=${page}`),
+      fetchApi<SearchResults>(`/discover/tv?api_key=${API_KEY}&with_genres=${matchingGenre.id}&page=${page}`)
+    ]);
+    
+    // Combine and shuffle results
+    const combinedResults = [...movieResults.results, ...tvResults.results]
+      .sort(() => Math.random() - 0.5);
+    
+    return {
+      page,
+      results: combinedResults,
+      total_pages: Math.max(movieResults.total_pages, tvResults.total_pages),
+      total_results: movieResults.total_results + tvResults.total_results
+    };
+  }
+  
+  // Fallback to regular search
+  return searchMedia(genreName, page);
+};
 // Get image URL
 export const getImageUrl = (path: string | null, size: "original" | "w500" | "w780" = "w500") => {
   if (!path) return null;
