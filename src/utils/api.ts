@@ -155,9 +155,8 @@ export const searchByGenreName = async (genreName: string, page: number = 1): Pr
       fetchApi<SearchResults>(`/discover/tv?api_key=${API_KEY}&with_genres=${matchingGenre.id}&page=${page}`)
     ]);
     
-    // Combine and shuffle results
-    const combinedResults = [...movieResults.results, ...tvResults.results]
-      .sort(() => Math.random() - 0.5);
+    // For genre searches, we'll show movies first, then TV shows
+    const combinedResults = [...movieResults.results.slice(0, 10), ...tvResults.results.slice(0, 10)];
     
     return {
       page,

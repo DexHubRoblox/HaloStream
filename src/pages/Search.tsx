@@ -1,18 +1,31 @@
 
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { searchMedia, searchByGenreName, Media } from '@/utils/api';
 import { genres } from '@/utils/genres';
 import Navbar from '@/components/Navbar';
 import MediaGrid from '@/components/MediaGrid';
 import Loader from '@/components/Loader';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const Search: React.FC = () => {
   const location = useLocation();
-  const query = new URLSearchParams(location.search).get('q') || '';
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const query = queryParams.get('q') || '';
+  const pageFromUrl = parseInt(queryParams.get('page') || '1', 10);
+  
   const [results, setResults] = useState<Media[]>([]);
   const [loading, setLoading] = useState(true);
   const [isGenreSearch, setIsGenreSearch] = useState(false);
+  const [page, setPage] = useState(pageFromUrl);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    if (pageFromUrl !== page) {
+      setPage(pageFromUrl);
+    }
+  }, [pageFromUrl]);
 
   useEffect(() => {
     if (query) {
@@ -26,9 +39,10 @@ const Search: React.FC = () => {
       
       if (matchingGenre) {
         setIsGenreSearch(true);
-        searchByGenreName(query)
+        searchByGenreName(query, page)
           .then(data => {
             setResults(data.results);
+            setTotalPages(Math.min(data.total_pages, 20)); // Limit to 20 pages max
             setLoading(false);
           })
           .catch(error => {
@@ -37,9 +51,10 @@ const Search: React.FC = () => {
           });
       } else {
         setIsGenreSearch(false);
-        searchMedia(query)
+        searchMedia(query, page)
           .then(data => {
             setResults(data.results);
+            setTotalPages(Math.min(data.total_pages, 20)); // Limit to 20 pages max
             setLoading(false);
           })
           .catch(error => {
@@ -49,9 +64,15 @@ const Search: React.FC = () => {
       }
     } else {
       setResults([]);
+      setTotalPages(1);
       setLoading(false);
     }
-  }, [query]);
+  }, [query, page]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    navigate(`/search?q=${encodeURIComponent(query)}&page=${newPage}`);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -74,6 +95,47 @@ const Search: React.FC = () => {
             title={`Found ${results.length} ${isGenreSearch ? 'genre' : ''} results`}
             medias={results}
           />
+        )}
+        
+        {/* Pagination */}
+        {results.length > 0 && totalPages > 1 && (
+          <Pagination className="mt-8">
+            <PaginationContent>
+              {page > 1 && (
+                <PaginationItem>
+                  <PaginationPrevious onClick={() => handlePageChange(page - 1)} />
+                </PaginationItem>
+              )}
+              
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const pageNumber = page <= 3 
+                  ? i + 1 
+                  : page >= totalPages - 2 
+                    ? totalPages - 4 + i 
+                    : page - 2 + i;
+                
+                if (pageNumber <= totalPages && pageNumber > 0) {
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <PaginationLink 
+                        isActive={pageNumber === page} 
+                        onClick={() => handlePageChange(pageNumber)}
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+              
+              {page < totalPages && (
+                <PaginationItem>
+                  <PaginationNext onClick={() => handlePageChange(page + 1)} />
+                </PaginationItem>
+              )}
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
     </div>

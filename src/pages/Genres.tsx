@@ -5,12 +5,14 @@ import { Media } from '@/utils/api';
 import Navbar from '@/components/Navbar';
 import MediaGrid from '@/components/MediaGrid';
 import { Button } from '@/components/ui/button';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const Genres: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const selectedGenreParam = queryParams.get('genre');
+  const pageFromUrl = parseInt(queryParams.get('page') || '1', 10);
   
   const [selectedGenre, setSelectedGenre] = useState<number | null>(
     selectedGenreParam ? parseInt(selectedGenreParam) : null
@@ -18,33 +20,64 @@ const Genres: React.FC = () => {
   const [genreMedia, setGenreMedia] = useState<Media[]>([]);
   const [loading, setLoading] = useState(false);
   const [mediaType, setMediaType] = useState<'movie' | 'tv' | 'both'>('both');
+  const [page, setPage] = useState(pageFromUrl);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    if (pageFromUrl !== page) {
+      setPage(pageFromUrl);
+    }
+  }, [pageFromUrl]);
 
   useEffect(() => {
     if (selectedGenre) {
-      fetchGenreMedia(selectedGenre, mediaType);
+      fetchGenreMedia(selectedGenre, mediaType, page);
     }
-  }, [selectedGenre, mediaType]);
+  }, [selectedGenre, mediaType, page]);
 
-  const fetchGenreMedia = async (genreId: number, type: 'movie' | 'tv' | 'both') => {
+  const fetchGenreMedia = async (genreId: number, type: 'movie' | 'tv' | 'both', currentPage: number = 1) => {
     setLoading(true);
     try {
       const genre = genres.find(g => g.id === genreId);
       if (!genre) return;
 
+      const API_KEY = "71fdb081b0133511ac14ac0cc10fd307";
+      const BASE_URL = "https://api.themoviedb.org/3";
+      
       let allMedia: Media[] = [];
+      let totalPagesCount = 1;
 
       if (type === 'both') {
-        const [movies, tvShows] = await Promise.all([
-          getMediaByGenre(genre.movieGenreId, 'movie'),
-          getMediaByGenre(genre.tvGenreId, 'tv')
+        // For 'both', we'll alternate between movies and TV shows
+        const movieResponse = await fetch(
+          `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genre.movieGenreId}&sort_by=popularity.desc&page=${currentPage}`
+        );
+        const tvResponse = await fetch(
+          `${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genre.tvGenreId}&sort_by=popularity.desc&page=${currentPage}`
+        );
+        
+        const [movieData, tvData] = await Promise.all([
+          movieResponse.json(),
+          tvResponse.json()
         ]);
+        
+        // Mix movies and TV shows
+        const movies = movieData.results.slice(0, 10);
+        const tvShows = tvData.results.slice(0, 10);
         allMedia = [...movies, ...tvShows].sort(() => Math.random() - 0.5);
+        totalPagesCount = Math.max(movieData.total_pages, tvData.total_pages);
       } else {
         const genreIdToUse = type === 'movie' ? genre.movieGenreId : genre.tvGenreId;
-        allMedia = await getMediaByGenre(genreIdToUse, type);
+        const response = await fetch(
+          `${BASE_URL}/discover/${type}?api_key=${API_KEY}&with_genres=${genreIdToUse}&sort_by=popularity.desc&page=${currentPage}`
+        );
+        const data = await response.json();
+        allMedia = data.results;
+        totalPagesCount = Math.min(data.total_pages, 20); // Limit to 20 pages max
       }
 
       setGenreMedia(allMedia);
+      setTotalPages(totalPagesCount);
     } catch (error) {
       console.error('Error fetching genre media:', error);
     } finally {
@@ -54,11 +87,23 @@ const Genres: React.FC = () => {
 
   const handleGenreSelect = (genreId: number) => {
     setSelectedGenre(genreId);
-    navigate(`/genres?genre=${genreId}`);
+    setPage(1);
+    navigate(`/genres?genre=${genreId}&page=1`);
   };
 
   const handleMediaTypeChange = (type: 'movie' | 'tv' | 'both') => {
     setMediaType(type);
+    setPage(1);
+    if (selectedGenre) {
+      navigate(`/genres?genre=${selectedGenre}&page=1`);
+    }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    if (selectedGenre) {
+      navigate(`/genres?genre=${selectedGenre}&page=${newPage}`);
+    }
   };
 
   const selectedGenreData = genres.find(g => g.id === selectedGenre);
@@ -139,6 +184,47 @@ const Genres: React.FC = () => {
             <h2 className="text-xl font-medium mb-2">Select a genre to get started</h2>
             <p>Choose from the genres above to discover amazing content</p>
           </div>
+        )}
+        
+        {/* Pagination */}
+        {selectedGenre && totalPages > 1 && (
+          <Pagination className="mt-8">
+            <PaginationContent>
+              {page > 1 && (
+                <PaginationItem>
+                  <PaginationPrevious onClick={() => handlePageChange(page - 1)} />
+                </PaginationItem>
+              )}
+              
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const pageNumber = page <= 3 
+                  ? i + 1 
+                  : page >= totalPages - 2 
+                    ? totalPages - 4 + i 
+                    : page - 2 + i;
+                
+                if (pageNumber <= totalPages && pageNumber > 0) {
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <PaginationLink 
+                        isActive={pageNumber === page} 
+                        onClick={() => handlePageChange(pageNumber)}
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+              
+              {page < totalPages && (
+                <PaginationItem>
+                  <PaginationNext onClick={() => handlePageChange(page + 1)} />
+                </PaginationItem>
+              )}
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
     </div>
