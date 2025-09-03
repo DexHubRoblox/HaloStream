@@ -160,8 +160,8 @@ export const searchByGenreName = async (genreName: string, page: number = 1): Pr
       fetchApi<SearchResults>(`/discover/tv?api_key=${API_KEY}&with_genres=${matchingGenre.id}&page=${page}`)
     ]);
     
-    // For genre searches, we'll show movies first, then TV shows
-    const combinedResults = [...movieResults.results.slice(0, 10), ...tvResults.results.slice(0, 10)];
+    // For genre searches, we'll show movies first, then TV shows (12 total)
+    const combinedResults = [...movieResults.results.slice(0, 6), ...tvResults.results.slice(0, 6)];
     
     return {
       page,
