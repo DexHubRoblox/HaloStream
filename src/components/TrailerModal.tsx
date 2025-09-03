@@ -100,7 +100,7 @@ const TrailerModal: React.FC<TrailerModalProps> = ({ media, isOpen, onClose }) =
                 <h3 className="text-white font-medium">Available Trailers ({trailers.length})</h3>
               </div>
               
-              <div className="overflow-y-auto h-full pb-20">
+              <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
                 <div className="p-2 space-y-2">
                   {trailers.map((trailer) => (
                     <button
