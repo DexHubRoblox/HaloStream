@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Media, getImageUrl } from '@/utils/api';
-import { useLazyImage } from '@/utils/lazyLoading';
+import { useLazyImage } from '@/hooks/useLazyImage';
 import { Play } from 'lucide-react';
 import WatchlistButton from './WatchlistButton';
 
