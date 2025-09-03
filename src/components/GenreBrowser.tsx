@@ -22,10 +22,10 @@ const GenreBrowser: React.FC = () => {
             getMediaByGenre(genre.tvGenreId, 'tv')
           ]);
           
-          // Combine and shuffle movies and TV shows (6 each for 12 total)
-          const combined = [...movies.slice(0, 6), ...tvShows.slice(0, 6)]
+          // Combine and shuffle movies and TV shows
+          const combined = [...movies.slice(0, 10), ...tvShows.slice(0, 10)]
             .sort(() => Math.random() - 0.5)
-            .slice(0, 12);
+            .slice(0, 15);
           
           setGenreData(prev => ({ ...prev, [genre.id]: combined }));
         } catch (error) {

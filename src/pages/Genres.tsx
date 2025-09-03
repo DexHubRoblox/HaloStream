@@ -48,7 +48,7 @@ const Genres: React.FC = () => {
       let totalPagesCount = 1;
 
       if (type === 'both') {
-        // For 'both', we'll mix movies and TV shows (6 each for 12 total)
+        // For 'both', we'll alternate between movies and TV shows
         const movieResponse = await fetch(
           `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genre.movieGenreId}&sort_by=popularity.desc&page=${currentPage}`
         );
@@ -61,10 +61,10 @@ const Genres: React.FC = () => {
           tvResponse.json()
         ]);
         
-        // Mix movies and TV shows (6 each for 12 total)
-        const movies = movieData.results.slice(0, 6);
-        const tvShows = tvData.results.slice(0, 6);
-        allMedia = [...movies, ...tvShows].sort(() => Math.random() - 0.5).slice(0, 12);
+        // Mix movies and TV shows
+        const movies = movieData.results.slice(0, 10);
+        const tvShows = tvData.results.slice(0, 10);
+        allMedia = [...movies, ...tvShows].sort(() => Math.random() - 0.5);
         totalPagesCount = Math.max(movieData.total_pages, tvData.total_pages);
       } else {
         const genreIdToUse = type === 'movie' ? genre.movieGenreId : genre.tvGenreId;

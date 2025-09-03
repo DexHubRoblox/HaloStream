@@ -77,7 +77,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
     setIsLoading(true);
     try {
       const data = await searchMedia(query);
-      setResults(data.results.slice(0, 6));
+      setResults(data.results.slice(0, 5));
       setShowResults(true);
     } catch (error) {
       console.error('Search error:', error);
