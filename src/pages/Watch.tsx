@@ -73,15 +73,6 @@ const Watch: React.FC = () => {
     fetchMediaDetails();
   }, [type, id, selectedSeason]);
 
-  // Auto-enter fullscreen on load
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      handleFullscreen();
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   // Handle fullscreen changes
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -203,196 +194,196 @@ const Watch: React.FC = () => {
   const currentEpisode = episodes.find(ep => ep.episode_number === selectedEpisode);
 
   return (
-    <div 
-      ref={playerRef}
-      className={`relative w-full h-screen bg-black overflow-hidden ${isFullscreen ? 'cursor-none' : ''}`}
-      onMouseMove={() => setShowControls(true)}
-    >
-      {/* Video Player */}
-      <iframe
-        ref={iframeRef}
-        src={watchUrl}
-        className="w-full h-full"
-        frameBorder="0"
-        allowFullScreen
-        title={title}
-      />
-
-      {/* Netflix-style Controls Overlay */}
+    <div className="min-h-screen bg-black">
+      {/* Video Player Container */}
       <div 
-        className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/50 transition-opacity duration-300 ${
-          showControls ? 'opacity-100' : 'opacity-0'
-        }`}
+        ref={playerRef}
+        className={`relative w-full h-screen bg-black overflow-hidden ${isFullscreen ? 'cursor-none' : ''}`}
+        onMouseMove={() => setShowControls(true)}
       >
-        {/* Top Bar */}
+        {/* Video Player */}
+        <iframe
+          ref={iframeRef}
+          src={watchUrl}
+          className="w-full h-full"
+          frameBorder="0"
+          allowFullScreen
+          title={title}
+        />
+
+        {/* Netflix-style Controls Overlay */}
         <div 
-          className="absolute top-0 left-0 right-0 p-6 flex items-center justify-between z-50"
-          style={{ pointerEvents: showControls ? 'auto' : 'none' }}
+          className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/50 transition-opacity duration-300 ${
+            showControls ? 'opacity-100' : 'opacity-0'
+          }`}
         >
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleBackToDetails}
-              className="text-white hover:bg-white/20 rounded-full"
-            >
-              <ArrowLeft size={24} />
-            </Button>
-            
-            <div className="text-white">
-              <h1 className="text-xl font-semibold">
-                {title}
-                {type === 'tv' && currentEpisode && (
-                  <span className="text-white/80 ml-2">
-                    S{selectedSeason}:E{selectedEpisode} - {currentEpisode.name}
-                  </span>
-                )}
-              </h1>
+          {/* Top Bar */}
+          <div 
+            className={`absolute top-0 left-0 right-0 p-6 flex items-center justify-between z-50 ${
+              showControls ? 'pointer-events-auto' : 'pointer-events-none'
+            }`}
+          >
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleBackToDetails}
+                className="text-white hover:bg-white/20 rounded-full pointer-events-auto"
+              >
+                <ArrowLeft size={24} />
+              </Button>
+              
+              <div className="text-white">
+                <h1 className="text-xl font-semibold">
+                  {title}
+                  {type === 'tv' && currentEpisode && (
+                    <span className="text-white/80 ml-2">
+                      S{selectedSeason}:E{selectedEpisode} - {currentEpisode.name}
+                    </span>
+                  )}
+                </h1>
+              </div>
+            </div>
+
+            {/* Provider Selector */}
+            <div className="pointer-events-auto">
+              <DropdownMenu open={showProviderMenu} onOpenChange={setShowProviderMenu}>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    className="text-white hover:bg-white/20 rounded-lg"
+                  >
+                    {provider.name.replace(' ⭐', '')}
+                    <ChevronDown size={16} className="ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  align="end" 
+                  className="w-48 bg-black/90 border-white/20 z-[100]"
+                >
+                  {providers.map((p) => (
+                    <DropdownMenuItem
+                      key={p.id}
+                      onClick={() => handleProviderChange(p)}
+                      className="text-white hover:bg-white/20 cursor-pointer"
+                    >
+                      {p.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
-          {/* Provider Selector */}
-          <DropdownMenu open={showProviderMenu} onOpenChange={setShowProviderMenu}>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                className="text-white hover:bg-white/20 rounded-lg z-50"
-                style={{ pointerEvents: 'auto' }}
-              >
-                {provider.name.replace(' ⭐', '')}
-                <ChevronDown size={16} className="ml-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent 
-              align="end" 
-              className="w-48 bg-black/90 border-white/20 z-[60]"
-              style={{ pointerEvents: 'auto' }}
-            >
-              {providers.map((p) => (
-                <DropdownMenuItem
-                  key={p.id}
-                  onClick={() => handleProviderChange(p)}
-                  className="text-white hover:bg-white/20 cursor-pointer"
-                >
-                  {p.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        {/* Center Play/Pause Button */}
-        <div 
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ pointerEvents: showControls ? 'auto' : 'none' }}
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="text-white hover:bg-white/20 rounded-full w-16 h-16"
+          {/* Center Play/Pause Button */}
+          <div 
+            className={`absolute inset-0 flex items-center justify-center ${
+              showControls ? 'pointer-events-auto' : 'pointer-events-none'
+            }`}
           >
-            {isPlaying ? <Pause size={32} /> : <Play size={32} />}
-          </Button>
-        </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="text-white hover:bg-white/20 rounded-full w-16 h-16"
+            >
+              {isPlaying ? <Pause size={32} /> : <Play size={32} />}
+            </Button>
+          </div>
 
-        {/* Bottom Controls */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 p-6"
-          style={{ pointerEvents: showControls ? 'auto' : 'none' }}
-        >
-          {/* TV Show Episode/Season Selectors */}
-          {type === 'tv' && (
-            <div className="flex gap-4 mb-4">
-              <Select value={selectedSeason.toString()} onValueChange={handleSeasonChange}>
-                <SelectTrigger 
-                  className="w-32 bg-black/50 border-white/20 text-white"
-                  style={{ pointerEvents: 'auto' }}
+          {/* Bottom Controls */}
+          <div 
+            className={`absolute bottom-0 left-0 right-0 p-6 ${
+              showControls ? 'pointer-events-auto' : 'pointer-events-none'
+            }`}
+          >
+            {/* TV Show Episode/Season Selectors */}
+            {type === 'tv' && (
+              <div className="flex gap-4 mb-4">
+                <Select value={selectedSeason.toString()} onValueChange={handleSeasonChange}>
+                  <SelectTrigger className="w-32 bg-black/50 border-white/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-black/90 border-white/20 z-[100]">
+                    {Array.from({ length: totalSeasons }, (_, i) => i + 1).map((season) => (
+                      <SelectItem key={season} value={season.toString()} className="text-white hover:bg-white/20">
+                        Season {season}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedEpisode.toString()} onValueChange={handleEpisodeChange}>
+                  <SelectTrigger className="w-32 bg-black/50 border-white/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-black/90 border-white/20 z-[100]">
+                    {episodes.map((episode) => (
+                      <SelectItem key={episode.id} value={episode.episode_number.toString()} className="text-white hover:bg-white/20">
+                        Episode {episode.episode_number}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Main Controls Bar */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsPlaying(!isPlaying)}
+                  className="text-white hover:bg-white/20 rounded-full"
                 >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-black/90 border-white/20 z-[60]">
-                  {Array.from({ length: totalSeasons }, (_, i) => i + 1).map((season) => (
-                    <SelectItem key={season} value={season.toString()} className="text-white hover:bg-white/20">
-                      Season {season}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                </Button>
 
-              <Select value={selectedEpisode.toString()} onValueChange={handleEpisodeChange}>
-                <SelectTrigger 
-                  className="w-32 bg-black/50 border-white/20 text-white"
-                  style={{ pointerEvents: 'auto' }}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-white/20 rounded-full"
                 >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-black/90 border-white/20 z-[60]">
-                  {episodes.map((episode) => (
-                    <SelectItem key={episode.id} value={episode.episode_number.toString()} className="text-white hover:bg-white/20">
-                      Episode {episode.episode_number}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+                  <SkipBack size={20} />
+                </Button>
 
-          {/* Main Controls Bar */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsPlaying(!isPlaying)}
-                className="text-white hover:bg-white/20 rounded-full"
-              >
-                {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-              </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-white/20 rounded-full"
+                >
+                  <SkipForward size={20} />
+                </Button>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/20 rounded-full"
-              >
-                <SkipBack size={20} />
-              </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsMuted(!isMuted)}
+                  className="text-white hover:bg-white/20 rounded-full"
+                >
+                  {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                </Button>
+              </div>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/20 rounded-full"
-              >
-                <SkipForward size={20} />
-              </Button>
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-white/20 rounded-full"
+                >
+                  <Settings size={20} />
+                </Button>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsMuted(!isMuted)}
-                className="text-white hover:bg-white/20 rounded-full"
-              >
-                {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/20 rounded-full"
-              >
-                <Settings size={20} />
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleFullscreen}
-                className="text-white hover:bg-white/20 rounded-full"
-              >
-                {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
-              </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleFullscreen}
+                  className="text-white hover:bg-white/20 rounded-full"
+                >
+                  {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
