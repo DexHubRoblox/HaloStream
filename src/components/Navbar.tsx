@@ -4,7 +4,6 @@ import { Search, Menu, X, Filter } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import SearchBar from './SearchBar';
 import WatchlistNavLink from './WatchlistNavLink';
-import ThemeToggle from './ThemeToggle';
 import AdvancedSearch from './AdvancedSearch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -79,34 +78,32 @@ const Navbar: React.FC = () => {
           <div className="flex items-center space-x-4">
             <WatchlistNavLink />
             
-            <ThemeToggle />
-            
             <button 
               onClick={() => setAdvancedSearchOpen(true)}
-              className="p-2 rounded-full transition-all hover:bg-foreground/10 text-foreground"
+              className="p-2 rounded-full transition-all hover:bg-white/10 text-white"
               aria-label="Advanced Search"
             >
-              <Filter size={20} className="text-foreground" />
+              <Filter size={20} className="text-white" />
             </button>
             
             <button 
               onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 rounded-full transition-all hover:bg-foreground/10 text-foreground"
+              className="p-2 rounded-full transition-all hover:bg-white/10 text-white"
               aria-label="Search"
             >
-              <Search size={20} className="text-foreground" />
+              <Search size={20} className="text-white" />
             </button>
             
             <div className="md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-full transition-all hover:bg-foreground/10 text-foreground"
+                className="p-2 rounded-full transition-all hover:bg-white/10 text-white"
                 aria-label="Toggle menu"
               >
                 {mobileMenuOpen ? (
-                  <X size={20} className="text-foreground" />
+                  <X size={20} className="text-white" />
                 ) : (
-                  <Menu size={20} className="text-foreground" />
+                  <Menu size={20} className="text-white" />
                 )}
               </button>
             </div>
@@ -116,7 +113,7 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-background/95 backdrop-blur-xl overflow-hidden animate-slide-down border-t border-border">
+        <div className="md:hidden bg-black/95 backdrop-blur-xl overflow-hidden animate-slide-down border-t border-gray-800">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navigation.map((item) => (
               <Link
@@ -124,8 +121,8 @@ const Navbar: React.FC = () => {
                 to={item.href}
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
                   isActive(item.href)
-                    ? 'bg-accent text-accent-foreground'
-                    : 'text-foreground/70 hover:bg-accent/50 hover:text-foreground'
+                    ? 'bg-red-600 text-white'
+                    : 'text-white/70 hover:bg-white/10 hover:text-white'
                 }`}
               >
                 {item.name}
@@ -135,8 +132,8 @@ const Navbar: React.FC = () => {
               to="/watchlist"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
                 isActive('/watchlist')
-                  ? 'bg-accent text-accent-foreground'
-                  : 'text-foreground/70 hover:bg-accent/50 hover:text-foreground'
+                  ? 'bg-red-600 text-white'
+                  : 'text-white/70 hover:bg-white/10 hover:text-white'
               }`}
             >
               My Watchlist
@@ -147,7 +144,7 @@ const Navbar: React.FC = () => {
 
       {/* Search Bar */}
       {searchOpen && (
-        <div className="py-4 px-4 md:px-12 bg-background/95 backdrop-blur-xl border-b border-border animate-slide-down">
+        <div className="py-4 px-4 md:px-12 bg-black/95 backdrop-blur-xl border-b border-gray-800 animate-slide-down">
           <SearchBar onClose={() => setSearchOpen(false)} />
         </div>
       )}

@@ -132,13 +132,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
             className="w-full py-2 pl-10 pr-10 rounded-full bg-secondary border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:ring-offset-2"
           />
           <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-            <SearchIcon size={18} />
+            <SearchIcon size={18} className="text-gray-400" />
           </div>
           {query && (
             <button
               type="button"
               onClick={handleClearSearch}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
             >
               <X size={18} />
             </button>
@@ -150,32 +150,32 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
       {showResults && (results.length > 0 || genreSuggestions.length > 0) && (
         <div 
           ref={resultsRef}
-          className="absolute top-full left-0 right-0 mt-2 bg-popover/90 backdrop-blur-lg rounded-lg shadow-lg overflow-hidden z-50 animate-scale-in border border-border"
+          className="absolute top-full left-0 right-0 mt-2 bg-gray-900/90 backdrop-blur-lg rounded-lg shadow-lg overflow-hidden z-50 animate-scale-in border border-gray-700"
         >
           <div className="max-h-80 overflow-y-auto">
             {/* Genre Suggestions */}
             {genreSuggestions.length > 0 && (
               <>
-                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground bg-muted/20">
+                <div className="px-3 py-2 text-xs font-semibold text-gray-400 bg-gray-800/20">
                   GENRES
                 </div>
                 {genreSuggestions.map((genreName) => (
                   <div
                     key={genreName}
                     onClick={() => handleGenreClick(genreName)}
-                    className="flex items-center p-3 hover:bg-accent transition-colors cursor-pointer"
+                    className="flex items-center p-3 hover:bg-gray-800 transition-colors cursor-pointer"
                   >
-                    <div className="flex-shrink-0 w-12 h-16 bg-gradient-to-br from-red-600 to-red-800 rounded flex items-center justify-center">
+                    <div className="flex-shrink-0 w-12 h-16 bg-gray-800 overflow-hidden rounded">
                       <span className="text-white text-xs font-bold">{genreName.slice(0, 2).toUpperCase()}</span>
                     </div>
                     <div className="ml-3 flex-1 text-left">
-                      <p className="font-medium text-foreground">{genreName}</p>
-                      <p className="text-xs text-muted-foreground">Browse genre</p>
+                      <p className="font-medium text-white">{title}</p>
+                      <p className="text-xs text-gray-400 capitalize">{mediaType}</p>
                     </div>
                   </div>
                 ))}
                 {results.length > 0 && (
-                  <div className="px-3 py-2 text-xs font-semibold text-muted-foreground bg-muted/20 border-t border-border">
+                  <div className="px-3 py-2 text-xs font-semibold text-gray-400 bg-gray-800/20 border-t border-gray-700">
                     MOVIES & TV SHOWS
                   </div>
                 )}
@@ -214,14 +214,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
               );
             })}
             <div 
-              className="bg-muted/20 p-2 text-center cursor-pointer hover:bg-accent"
+              className="bg-gray-800/20 p-2 text-center cursor-pointer hover:bg-gray-800"
               onClick={() => {
                 navigate(`/search?q=${encodeURIComponent(query.trim())}`);
                 setShowResults(false);
                 if (onClose) onClose();
               }}
             >
-              <p className="text-sm font-medium text-foreground/80">View all results</p>
+              <p className="text-sm font-medium text-white/80">View all results</p>
             </div>
           </div>
         </div>
