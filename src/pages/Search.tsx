@@ -140,28 +140,10 @@ const Search: React.FC = () => {
     
     return description;
   };
-          .then(data => {
-            setResults(data.results);
-            setTotalPages(Math.min(data.total_pages, 20)); // Limit to 20 pages max
-            setLoading(false);
-          })
-          .catch(error => {
-            console.error('Error searching:', error);
-            setLoading(false);
-          });
-      }
-    } else {
-      setResults([]);
-      setTotalPages(1);
-      setLoading(false);
-    }
-  }, [query, page]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
     const params = new URLSearchParams(location.search);
-    params.set('page', newPage.toString());
-    navigate(`/search?${params.toString()}`);
     params.set('page', newPage.toString());
     navigate(`/search?${params.toString()}`);
   };
