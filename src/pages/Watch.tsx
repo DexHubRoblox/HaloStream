@@ -223,10 +223,12 @@ const Watch: React.FC = () => {
         className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/50 transition-opacity duration-300 ${
           showControls ? 'opacity-100' : 'opacity-0'
         }`}
-        style={{ pointerEvents: showControls ? 'auto' : 'none' }}
       >
         {/* Top Bar */}
-        <div className="absolute top-0 left-0 right-0 p-6 flex items-center justify-between">
+        <div 
+          className="absolute top-0 left-0 right-0 p-6 flex items-center justify-between z-50"
+          style={{ pointerEvents: showControls ? 'auto' : 'none' }}
+        >
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
@@ -252,12 +254,20 @@ const Watch: React.FC = () => {
           {/* Provider Selector */}
           <DropdownMenu open={showProviderMenu} onOpenChange={setShowProviderMenu}>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="text-white hover:bg-white/20 rounded-lg">
+              <Button 
+                variant="ghost" 
+                className="text-white hover:bg-white/20 rounded-lg z-50"
+                style={{ pointerEvents: 'auto' }}
+              >
                 {provider.name.replace(' ⭐', '')}
                 <ChevronDown size={16} className="ml-2" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-black/90 border-white/20">
+            <DropdownMenuContent 
+              align="end" 
+              className="w-48 bg-black/90 border-white/20 z-[60]"
+              style={{ pointerEvents: 'auto' }}
+            >
               {providers.map((p) => (
                 <DropdownMenuItem
                   key={p.id}
@@ -272,7 +282,10 @@ const Watch: React.FC = () => {
         </div>
 
         {/* Center Play/Pause Button */}
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div 
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ pointerEvents: showControls ? 'auto' : 'none' }}
+        >
           <Button
             variant="ghost"
             size="icon"
@@ -284,15 +297,21 @@ const Watch: React.FC = () => {
         </div>
 
         {/* Bottom Controls */}
-        <div className="absolute bottom-0 left-0 right-0 p-6">
+        <div 
+          className="absolute bottom-0 left-0 right-0 p-6"
+          style={{ pointerEvents: showControls ? 'auto' : 'none' }}
+        >
           {/* TV Show Episode/Season Selectors */}
           {type === 'tv' && (
             <div className="flex gap-4 mb-4">
               <Select value={selectedSeason.toString()} onValueChange={handleSeasonChange}>
-                <SelectTrigger className="w-32 bg-black/50 border-white/20 text-white">
+                <SelectTrigger 
+                  className="w-32 bg-black/50 border-white/20 text-white"
+                  style={{ pointerEvents: 'auto' }}
+                >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-black/90 border-white/20">
+                <SelectContent className="bg-black/90 border-white/20 z-[60]">
                   {Array.from({ length: totalSeasons }, (_, i) => i + 1).map((season) => (
                     <SelectItem key={season} value={season.toString()} className="text-white hover:bg-white/20">
                       Season {season}
@@ -302,10 +321,13 @@ const Watch: React.FC = () => {
               </Select>
 
               <Select value={selectedEpisode.toString()} onValueChange={handleEpisodeChange}>
-                <SelectTrigger className="w-32 bg-black/50 border-white/20 text-white">
+                <SelectTrigger 
+                  className="w-32 bg-black/50 border-white/20 text-white"
+                  style={{ pointerEvents: 'auto' }}
+                >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-black/90 border-white/20">
+                <SelectContent className="bg-black/90 border-white/20 z-[60]">
                   {episodes.map((episode) => (
                     <SelectItem key={episode.id} value={episode.episode_number.toString()} className="text-white hover:bg-white/20">
                       Episode {episode.episode_number}
