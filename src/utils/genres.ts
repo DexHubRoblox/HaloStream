@@ -183,7 +183,7 @@ export const getMediaByGenre = async (genreId: number, type: 'movie' | 'tv' = 'm
     }
     
     const data = await response.json();
-    return data.results.slice(0, 20); // Limit to 20 items per genre
+    return data.results.slice(0, 12); // Limit to 12 items per genre
   } catch (error) {
     console.error(`Error fetching ${type} by genre:`, error);
     return [];
