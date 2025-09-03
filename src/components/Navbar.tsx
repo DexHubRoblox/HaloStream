@@ -7,7 +7,7 @@ import SearchBar from './SearchBar';
 import WatchlistNavLink from './WatchlistNavLink';
 import ThemeToggle from './ThemeToggle';
 import AdvancedSearch from './AdvancedSearch';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
@@ -156,6 +156,9 @@ const Navbar: React.FC = () => {
       {/* Advanced Search Modal */}
       <Dialog open={advancedSearchOpen} onOpenChange={setAdvancedSearchOpen}>
         <DialogContent className="max-w-2xl bg-transparent border-none p-0">
+          <DialogHeader>
+            <DialogTitle className="sr-only">Advanced Search</DialogTitle>
+          </DialogHeader>
           <AdvancedSearch onClose={() => setAdvancedSearchOpen(false)} />
         </DialogContent>
       </Dialog>
