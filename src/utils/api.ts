@@ -135,6 +135,71 @@ export const getSeasonDetails = (tvId: string, seasonNumber: number) => {
 export const searchMedia = (query: string, page: number = 1) => {
   return fetchApi<SearchResults>(`/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=${page}`);
 };
+export const getRecentlyAdded = async (mediaType: 'movie' | 'tv' = 'movie', page: number = 1) => {
+  const currentDate = new Date();
+  const thirtyDaysAgo = new Date(currentDate.getTime() - (30 * 24 * 60 * 60 * 1000));
+  const dateString = thirtyDaysAgo.toISOString().split('T')[0];
+  
+  const endpoint = mediaType === 'movie' 
+    ? `/discover/movie?api_key=${API_KEY}&sort_by=release_date.desc&release_date.gte=${dateString}&page=${page}`
+    : `/discover/tv?api_key=${API_KEY}&sort_by=first_air_date.desc&first_air_date.gte=${dateString}&page=${page}`;
+    
+  return fetchApi<SearchResults>(endpoint);
+};
+
+// Advanced search with filters
+export const advancedSearch = async (params: {
+  query?: string;
+  genre?: string;
+  mediaType?: 'movie' | 'tv';
+  yearMin?: number;
+  yearMax?: number;
+  ratingMin?: number;
+  ratingMax?: number;
+  sortBy?: string;
+  page?: number;
+}) => {
+  const {
+    query,
+    genre,
+    mediaType,
+    yearMin,
+    yearMax,
+    ratingMin,
+    ratingMax,
+    sortBy = 'popularity.desc',
+    page = 1
+  } = params;
+
+  // If there's a search query, use search endpoint
+  if (query) {
+    const searchType = mediaType ? mediaType : 'multi';
+    return fetchApi<SearchResults>(`/search/${searchType}?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=${page}`);
+  }
+
+  // Otherwise use discover endpoint with filters
+  const discoverType = mediaType || 'movie';
+  let endpoint = `/discover/${discoverType}?api_key=${API_KEY}&sort_by=${sortBy}&page=${page}`;
+
+  if (genre) {
+    const genreObj = genres.find(g => g.name === genre);
+    if (genreObj) {
+      const genreId = discoverType === 'movie' ? genreObj.movieGenreId : genreObj.tvGenreId;
+      endpoint += `&with_genres=${genreId}`;
+    }
+  }
+
+  if (yearMin || yearMax) {
+    const dateField = discoverType === 'movie' ? 'release_date' : 'first_air_date';
+    if (yearMin) endpoint += `&${dateField}.gte=${yearMin}-01-01`;
+    if (yearMax) endpoint += `&${dateField}.lte=${yearMax}-12-31`;
+  }
+
+  if (ratingMin !== undefined) endpoint += `&vote_average.gte=${ratingMin}`;
+  if (ratingMax !== undefined) endpoint += `&vote_average.lte=${ratingMax}`;
+
+  return fetchApi<SearchResults>(endpoint);
+};
 
 // Search by genre name
 export const searchByGenreName = async (genreName: string, page: number = 1): Promise<SearchResults> => {

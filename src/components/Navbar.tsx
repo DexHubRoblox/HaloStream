@@ -1,10 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Menu, X } from 'lucide-react';
+import { Search, Menu, X, Filter } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import SearchBar from './SearchBar';
 import WatchlistNavLink from './WatchlistNavLink';
+import ThemeToggle from './ThemeToggle';
+import AdvancedSearch from './AdvancedSearch';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
@@ -12,6 +15,7 @@ const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
   const [searchOpen, setSearchOpen] = useState(false);
+  const [advancedSearchOpen, setAdvancedSearchOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,6 +31,7 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     setMobileMenuOpen(false);
     setSearchOpen(false);
+    setAdvancedSearchOpen(false);
   }, [location.pathname]);
 
   const navigation = [
@@ -74,6 +79,16 @@ const Navbar: React.FC = () => {
           {/* Search and Mobile Menu Toggle */}
           <div className="flex items-center space-x-4">
             <WatchlistNavLink />
+            
+            <ThemeToggle />
+            
+            <button 
+              onClick={() => setAdvancedSearchOpen(true)}
+              className="p-2 rounded-full transition-all hover:bg-white/10"
+              aria-label="Advanced Search"
+            >
+              <Filter size={20} className="text-white" />
+            </button>
             
             <button 
               onClick={() => setSearchOpen(!searchOpen)}
@@ -137,6 +152,13 @@ const Navbar: React.FC = () => {
           <SearchBar onClose={() => setSearchOpen(false)} />
         </div>
       )}
+
+      {/* Advanced Search Modal */}
+      <Dialog open={advancedSearchOpen} onOpenChange={setAdvancedSearchOpen}>
+        <DialogContent className="max-w-2xl bg-transparent border-none p-0">
+          <AdvancedSearch onClose={() => setAdvancedSearchOpen(false)} />
+        </DialogContent>
+      </Dialog>
     </nav>
   );
 };

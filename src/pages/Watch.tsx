@@ -1,10 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { getMediaDetails, MediaDetails, getSeasonDetails, Episode } from '@/utils/api';
 import { Provider, getDefaultProvider } from '@/utils/providers';
 import ProviderSelector from '@/components/ProviderSelector';
+import { updateWatchProgress } from '@/utils/watchHistory';
 import { Button } from '@/components/ui/button';
 import { 
   ArrowLeft, 
@@ -30,11 +30,19 @@ const Watch: React.FC = () => {
   const [selectedEpisode, setSelectedEpisode] = useState<number>(1);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [showDetails, setShowDetails] = useState(false);
+  const [watchStartTime, setWatchStartTime] = useState<number>(0);
   
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!type || !id) return;
+    
+    // Check for timestamp in URL (for continue watching)
+    const urlParams = new URLSearchParams(window.location.search);
+    const timestamp = urlParams.get('t');
+    if (timestamp) {
+      setWatchStartTime(parseInt(timestamp));
+    }
     
     const fetchMediaDetails = async () => {
       setLoading(true);
@@ -55,6 +63,27 @@ const Watch: React.FC = () => {
 
     fetchMediaDetails();
   }, [type, id, selectedSeason]);
+
+  // Track watch progress
+  useEffect(() => {
+    if (!media) return;
+
+    const trackProgress = () => {
+      // In a real implementation, you'd get this from the video player
+      // For now, we'll simulate progress tracking
+      const currentTime = watchStartTime + Math.floor(Math.random() * 300); // Simulated
+      const duration = (type === 'movie' ? media.runtime : 45) * 60; // Convert to seconds
+      
+      if (duration > 0) {
+        updateWatchProgress(media, currentTime, duration);
+      }
+    };
+
+    // Track progress every 30 seconds
+    const interval = setInterval(trackProgress, 30000);
+    
+    return () => clearInterval(interval);
+  }, [media, type, watchStartTime]);
 
   const handleBackToDetails = () => {
     navigate(`/details/${type}/${id}`);

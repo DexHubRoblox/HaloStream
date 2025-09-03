@@ -4,16 +4,22 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { MediaDetails, getMediaDetails, getImageUrl, getRecommendations, Media } from '@/utils/api';
 import Navbar from '@/components/Navbar';
 import MediaGrid from '@/components/MediaGrid';
+import TrailerModal from '@/components/TrailerModal';
+import RatingModal from '@/components/RatingModal';
 import { Button } from '@/components/ui/button';
-import { Play, Calendar, Clock, Star } from 'lucide-react';
+import { Play, Calendar, Clock, Star, Video, ThumbsUp } from 'lucide-react';
 import Loader from '@/components/Loader';
 import WatchlistButton from '@/components/WatchlistButton';
+import { getUserRating } from '@/utils/userRatings';
 
 const Details: React.FC = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
   const [details, setDetails] = useState<MediaDetails | null>(null);
   const [recommendations, setRecommendations] = useState<Media[]>([]);
   const [loading, setLoading] = useState(true);
+  const [trailerModalOpen, setTrailerModalOpen] = useState(false);
+  const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [userRating, setUserRating] = useState<number | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,6 +35,10 @@ const Details: React.FC = () => {
         
         setDetails(detailsData);
         setRecommendations(recommendationsData.results.slice(0, 12));
+        
+        // Get user rating
+        const rating = getUserRating(detailsData.id);
+        setUserRating(rating?.rating || null);
       } catch (error) {
         console.error('Error fetching details:', error);
       } finally {
@@ -217,6 +227,25 @@ const Details: React.FC = () => {
                 <Play size={18} className="mr-2" /> Watch Now
               </Button>
               
+              <Button 
+                onClick={() => setTrailerModalOpen(true)}
+                variant="outline"
+                size="lg" 
+                className="rounded-full border-gray-400 bg-gray-600/50 backdrop-blur-sm hover:bg-gray-600/70 transition-all px-8"
+              >
+                <Video size={18} className="mr-2" /> Trailer
+              </Button>
+              
+              <Button 
+                onClick={() => setRatingModalOpen(true)}
+                variant="outline"
+                size="lg" 
+                className="rounded-full border-gray-400 bg-gray-600/50 backdrop-blur-sm hover:bg-gray-600/70 transition-all px-8"
+              >
+                <ThumbsUp size={18} className="mr-2" /> 
+                {userRating ? `Rated ${userRating}/10` : 'Rate'}
+              </Button>
+              
               <WatchlistButton 
                 media={mediaForWatchlist} 
                 variant="button" 
@@ -236,6 +265,19 @@ const Details: React.FC = () => {
           </div>
         )}
       </div>
+      
+      {/* Modals */}
+      <TrailerModal 
+        media={mediaForWatchlist}
+        isOpen={trailerModalOpen}
+        onClose={() => setTrailerModalOpen(false)}
+      />
+      
+      <RatingModal 
+        media={mediaForWatchlist}
+        isOpen={ratingModalOpen}
+        onClose={() => setRatingModalOpen(false)}
+      />
     </div>
   );
 };

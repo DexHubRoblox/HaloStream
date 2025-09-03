@@ -1,12 +1,13 @@
 
 import React, { useEffect, useState } from 'react';
-import { getTrending, getPopularMovies, getPopularTVShows, getNowPlayingMovies, getTopRatedMovies, Media } from '@/utils/api';
+import { getTrending, getPopularMovies, getPopularTVShows, getNowPlayingMovies, getTopRatedMovies, Media, getImageUrl } from '@/utils/api';
 import MediaGrid from '@/components/MediaGrid';
 import Hero from '@/components/Hero';
 import Navbar from '@/components/Navbar';
 import Collections from '@/components/Collections';
 import StreamingCollection from '@/components/StreamingCollection';
 import GenreBrowser from '@/components/GenreBrowser';
+import ContinueWatching from '@/components/ContinueWatching';
 import { streamingCollections } from '@/utils/collections';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
@@ -61,6 +62,8 @@ const Index: React.FC = () => {
       <Hero />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
+        <ContinueWatching />
+        
         <Collections />
         
         <GenreBrowser />
