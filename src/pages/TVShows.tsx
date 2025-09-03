@@ -81,8 +81,8 @@ const TVShows: React.FC = () => {
       
       <div className="pt-24 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold animate-fade-in">TV Shows</h1>
-          <p className="text-halo-500 mt-2 animate-fade-in animate-delay-100">
+          <h1 className="text-3xl md:text-4xl font-black animate-fade-in text-white">TV Shows</h1>
+          <p className="text-white/70 mt-2 animate-fade-in animate-delay-100">
             Discover and watch your favorite TV series
           </p>
         </div>
@@ -93,7 +93,7 @@ const TVShows: React.FC = () => {
           onValueChange={handleTabChange}
           className="w-full"
         >
-          <TabsList className="grid w-full md:w-auto grid-cols-3 mb-8">
+          <TabsList className="grid w-full md:w-auto grid-cols-3 mb-8 bg-gray-800/50">
             <TabsTrigger value="popular">Popular</TabsTrigger>
             <TabsTrigger value="top-rated">Top Rated</TabsTrigger>
             <TabsTrigger value="on-air">On Air</TabsTrigger>

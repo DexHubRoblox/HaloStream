@@ -36,8 +36,8 @@ const Search: React.FC = () => {
       
       <div className="pt-24 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold animate-fade-in">Search Results</h1>
-          <p className="text-halo-500 mt-2 animate-fade-in animate-delay-100">
+          <h1 className="text-3xl md:text-4xl font-black animate-fade-in text-white">Search Results</h1>
+          <p className="text-white/70 mt-2 animate-fade-in animate-delay-100">
             {query ? `Results for "${query}"` : 'Enter a search term'}
           </p>
         </div>

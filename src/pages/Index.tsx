@@ -6,6 +6,7 @@ import Hero from '@/components/Hero';
 import Navbar from '@/components/Navbar';
 import Collections from '@/components/Collections';
 import StreamingCollection from '@/components/StreamingCollection';
+import GenreBrowser from '@/components/GenreBrowser';
 import { streamingCollections } from '@/utils/collections';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
@@ -62,6 +63,8 @@ const Index: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
         <Collections />
         
+        <GenreBrowser />
+        
         {streamingCollections.map(collection => (
           <StreamingCollection 
             key={collection.id} 
@@ -69,49 +72,51 @@ const Index: React.FC = () => {
           />
         ))}
         
-        <div className="py-6">
-          <SectionHeader title="Trending Today" link="/trending" />
-          <MediaGrid
-            title=""
-            medias={trendingMedia}
-            isLoading={isLoading}
-          />
-        </div>
-        
-        <div className="py-6">
-          <SectionHeader title="Popular Movies" link="/movies" />
-          <MediaGrid
-            title=""
-            medias={popularMovies}
-            isLoading={isLoading}
-          />
-        </div>
-        
-        <div className="py-6">
-          <SectionHeader title="Now Playing in Theaters" link="/movies?tab=now-playing" />
-          <MediaGrid
-            title=""
-            medias={nowPlayingMovies}
-            isLoading={isLoading}
-          />
-        </div>
-        
-        <div className="py-6">
-          <SectionHeader title="Top Rated Movies" link="/movies?tab=top-rated" />
-          <MediaGrid
-            title=""
-            medias={topRatedMovies}
-            isLoading={isLoading}
-          />
-        </div>
-        
-        <div className="py-6">
-          <SectionHeader title="Popular TV Shows" link="/tv-shows" />
-          <MediaGrid
-            title=""
-            medias={popularTVShows}
-            isLoading={isLoading}
-          />
+        <div className="space-y-8 mt-12">
+          <div>
+            <SectionHeader title="Trending Today" link="/trending" />
+            <MediaGrid
+              title=""
+              medias={trendingMedia}
+              isLoading={isLoading}
+            />
+          </div>
+          
+          <div>
+            <SectionHeader title="Popular Movies" link="/movies" />
+            <MediaGrid
+              title=""
+              medias={popularMovies}
+              isLoading={isLoading}
+            />
+          </div>
+          
+          <div>
+            <SectionHeader title="Now Playing in Theaters" link="/movies?tab=now-playing" />
+            <MediaGrid
+              title=""
+              medias={nowPlayingMovies}
+              isLoading={isLoading}
+            />
+          </div>
+          
+          <div>
+            <SectionHeader title="Top Rated Movies" link="/movies?tab=top-rated" />
+            <MediaGrid
+              title=""
+              medias={topRatedMovies}
+              isLoading={isLoading}
+            />
+          </div>
+          
+          <div>
+            <SectionHeader title="Popular TV Shows" link="/tv-shows" />
+            <MediaGrid
+              title=""
+              medias={popularTVShows}
+              isLoading={isLoading}
+            />
+          </div>
         </div>
       </div>
     </div>

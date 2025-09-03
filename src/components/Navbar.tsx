@@ -42,14 +42,14 @@ const Navbar: React.FC = () => {
   return (
     <nav 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-background/90 backdrop-blur-xl shadow-md' : 'bg-transparent'
+        scrolled ? 'bg-black/95 backdrop-blur-xl' : 'bg-gradient-to-b from-black/80 to-transparent'
       }`}
     >
-      <div className="px-6 md:px-12 mx-auto">
+      <div className="px-4 md:px-12 mx-auto max-w-7xl">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <span className="text-2xl font-extrabold tracking-tighter text-white animate-fade-in">HaloStream</span>
+              <span className="text-2xl font-black tracking-tight text-red-600 animate-fade-in">HaloStream</span>
             </Link>
           </div>
 
@@ -59,10 +59,10 @@ const Navbar: React.FC = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-sm font-medium transition-all duration-200 hover:text-white/80 ${
+                className={`text-sm font-medium transition-all duration-200 hover:text-white ${
                   isActive(item.href) 
-                    ? 'text-white font-semibold' 
-                    : 'text-white/70'
+                    ? 'text-white font-bold' 
+                    : 'text-white/80'
                 }`}
               >
                 {item.name}
@@ -101,7 +101,7 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden glass overflow-hidden animate-slide-down">
+        <div className="md:hidden bg-black/95 backdrop-blur-xl overflow-hidden animate-slide-down border-t border-white/10">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navigation.map((item) => (
               <Link
@@ -132,7 +132,7 @@ const Navbar: React.FC = () => {
 
       {/* Search Bar */}
       {searchOpen && (
-        <div className="py-4 px-6 md:px-12 bg-background/90 backdrop-blur-xl border-b border-white/10 animate-slide-down">
+        <div className="py-4 px-4 md:px-12 bg-black/95 backdrop-blur-xl border-b border-white/10 animate-slide-down">
           <SearchBar onClose={() => setSearchOpen(false)} />
         </div>
       )}

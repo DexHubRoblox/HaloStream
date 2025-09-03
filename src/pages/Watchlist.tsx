@@ -31,7 +31,7 @@ const Watchlist: React.FC = () => {
       <Navbar />
       
       <div className="pt-24 pb-16 px-6 md:px-12 max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4 text-white">My Watchlist</h1>
+        <h1 className="text-3xl font-black mb-4 text-white">My Watchlist</h1>
         
         {watchlist.length === 0 ? (
           <div className="flex flex-col items-center justify-center mt-16 text-white/60">

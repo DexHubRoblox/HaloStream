@@ -88,8 +88,8 @@ const Movies: React.FC = () => {
       
       <div className="pt-24 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold animate-fade-in">Movies</h1>
-          <p className="text-halo-500 mt-2 animate-fade-in animate-delay-100">
+          <h1 className="text-3xl md:text-4xl font-black animate-fade-in text-white">Movies</h1>
+          <p className="text-white/70 mt-2 animate-fade-in animate-delay-100">
             Discover and watch your favorite movies
           </p>
         </div>
@@ -100,7 +100,7 @@ const Movies: React.FC = () => {
           onValueChange={handleTabChange}
           className="w-full"
         >
-          <TabsList className="grid w-full md:w-auto grid-cols-4 mb-8">
+          <TabsList className="grid w-full md:w-auto grid-cols-4 mb-8 bg-gray-800/50">
             <TabsTrigger value="popular">Popular</TabsTrigger>
             <TabsTrigger value="top-rated">Top Rated</TabsTrigger>
             <TabsTrigger value="now-playing">Now Playing</TabsTrigger>
