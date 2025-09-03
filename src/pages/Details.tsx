@@ -7,8 +7,9 @@ import MediaGrid from '@/components/MediaGrid';
 import TrailerModal from '@/components/TrailerModal';
 import RatingModal from '@/components/RatingModal';
 import CastSection from '@/components/CastSection';
+import { getSoundtrackInfo, getAwardsInfo, SoundtrackInfo, Awards } from '@/utils/soundtrack';
 import { Button } from '@/components/ui/button';
-import { Play, Calendar, Clock, Star, Video, ThumbsUp, Share } from 'lucide-react';
+import { Play, Calendar, Clock, Star, Video, ThumbsUp, Share, Music, Award } from 'lucide-react';
 import Loader from '@/components/Loader';
 import WatchlistButton from '@/components/WatchlistButton';
 import { getUserRating } from '@/utils/userRatings';
@@ -22,6 +23,10 @@ const Details: React.FC = () => {
   const [trailerModalOpen, setTrailerModalOpen] = useState(false);
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
   const [userRating, setUserRating] = useState<number | null>(null);
+  const [soundtrack, setSoundtrack] = useState<SoundtrackInfo[]>([]);
+  const [awards, setAwards] = useState<Awards | null>(null);
+  const [showSoundtrack, setShowSoundtrack] = useState(false);
+  const [showAwards, setShowAwards] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,6 +46,18 @@ const Details: React.FC = () => {
         // Get user rating
         const rating = getUserRating(detailsData.id);
         setUserRating(rating?.rating || null);
+        
+        // Load additional data
+        try {
+          const [soundtrackData, awardsData] = await Promise.all([
+            getSoundtrackInfo(detailsData.id, type as 'movie' | 'tv'),
+            getAwardsInfo(detailsData.id, type as 'movie' | 'tv')
+          ]);
+          setSoundtrack(soundtrackData);
+          setAwards(awardsData);
+        } catch (error) {
+          console.error('Error loading additional data:', error);
+        }
       } catch (error) {
         console.error('Error fetching details:', error);
       } finally {
@@ -269,9 +286,147 @@ const Details: React.FC = () => {
                 <Share size={18} className="mr-2" /> 
                 Share
               </Button>
+              
+              {soundtrack.length > 0 && (
+                <Button 
+                  onClick={() => setShowSoundtrack(!showSoundtrack)}
+                  variant="outline"
+                  size="lg" 
+                  className="rounded-full border-gray-400 bg-gray-600/50 backdrop-blur-sm hover:bg-gray-600/70 transition-all px-8"
+                >
+                  <Music size={18} className="mr-2" /> 
+                  Soundtrack
+                </Button>
+              )}
+              
+              {awards && (awards.oscars.length > 0 || awards.emmys.length > 0 || awards.goldenGlobes.length > 0) && (
+                <Button 
+                  onClick={() => setShowAwards(!showAwards)}
+                  variant="outline"
+                  size="lg" 
+                  className="rounded-full border-gray-400 bg-gray-600/50 backdrop-blur-sm hover:bg-gray-600/70 transition-all px-8"
+                >
+                  <Award size={18} className="mr-2" /> 
+                  Awards
+                </Button>
+              )}
             </div>
           </div>
         </div>
+        
+        {/* Soundtrack Section */}
+        {showSoundtrack && soundtrack.length > 0 && (
+          <div className="mt-12 animate-fade-in">
+            <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-2">
+              <Music size={24} />
+              Soundtrack
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {soundtrack.map((track) => (
+                <div key={track.id} className="bg-gray-800/50 rounded-lg p-4">
+                  <h3 className="text-white font-medium mb-1">{track.name}</h3>
+                  <p className="text-gray-400 text-sm mb-2">by {track.artist}</p>
+                  {track.album && (
+                    <p className="text-gray-500 text-xs mb-3">{track.album}</p>
+                  )}
+                  <div className="flex gap-2">
+                    {track.spotifyUrl && (
+                      <a
+                        href={track.spotifyUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-green-400 hover:text-green-300 text-xs"
+                      >
+                        Spotify
+                      </a>
+                    )}
+                    {track.youtubeUrl && (
+                      <a
+                        href={track.youtubeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-red-400 hover:text-red-300 text-xs"
+                      >
+                        YouTube
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Awards Section */}
+        {showAwards && awards && (
+          <div className="mt-12 animate-fade-in">
+            <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-2">
+              <Award size={24} />
+              Awards & Recognition
+            </h2>
+            <div className="space-y-6">
+              {awards.oscars.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-yellow-400 mb-3">Academy Awards</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {awards.oscars.map((award, index) => (
+                      <div key={index} className={`p-3 rounded-lg ${award.won ? 'bg-yellow-900/30' : 'bg-gray-800/50'}`}>
+                        <div className="flex items-center justify-between">
+                          <span className="text-white font-medium">{award.category}</span>
+                          <span className={`text-xs px-2 py-1 rounded ${award.won ? 'bg-yellow-600 text-white' : 'bg-gray-600 text-gray-300'}`}>
+                            {award.won ? 'WON' : 'NOMINATED'}
+                          </span>
+                        </div>
+                        <div className="text-gray-400 text-sm mt-1">{award.year}</div>
+                        {award.nominee && (
+                          <div className="text-gray-500 text-xs mt-1">{award.nominee}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {awards.goldenGlobes.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-amber-400 mb-3">Golden Globe Awards</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {awards.goldenGlobes.map((award, index) => (
+                      <div key={index} className={`p-3 rounded-lg ${award.won ? 'bg-amber-900/30' : 'bg-gray-800/50'}`}>
+                        <div className="flex items-center justify-between">
+                          <span className="text-white font-medium">{award.category}</span>
+                          <span className={`text-xs px-2 py-1 rounded ${award.won ? 'bg-amber-600 text-white' : 'bg-gray-600 text-gray-300'}`}>
+                            {award.won ? 'WON' : 'NOMINATED'}
+                          </span>
+                        </div>
+                        <div className="text-gray-400 text-sm mt-1">{award.year}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {awards.other.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-400 mb-3">Other Awards</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {awards.other.map((award, index) => (
+                      <div key={index} className={`p-3 rounded-lg ${award.won ? 'bg-blue-900/30' : 'bg-gray-800/50'}`}>
+                        <div className="flex items-center justify-between">
+                          <span className="text-white font-medium">{award.category}</span>
+                          <span className={`text-xs px-2 py-1 rounded ${award.won ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'}`}>
+                            {award.won ? 'WON' : 'NOMINATED'}
+                          </span>
+                        </div>
+                        <div className="text-gray-400 text-sm mt-1">{award.name} • {award.year}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
         
         {/* Cast & Crew */}
         <CastSection mediaId={id!} mediaType={type as 'movie' | 'tv'} />

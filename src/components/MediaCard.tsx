@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Media, getImageUrl } from '@/utils/api';
+import { useLazyImage } from '@/utils/lazyLoading';
 import { Play } from 'lucide-react';
 import WatchlistButton from './WatchlistButton';
 
@@ -11,10 +12,10 @@ interface MediaCardProps {
 }
 
 const MediaCard: React.FC<MediaCardProps> = ({ media, index = 0 }) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
   const navigate = useNavigate();
-  
   const posterUrl = getImageUrl(media.poster_path);
+  const { imageSrc, isLoaded, imgRef } = useLazyImage(posterUrl || '', '/placeholder.svg');
+  
   const title = media.title || media.name || 'Unknown Title';
   const releaseDate = media.release_date || media.first_air_date;
   const year = releaseDate ? new Date(releaseDate).getFullYear() : '';
@@ -41,21 +42,12 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, index = 0 }) => {
     >
       <div className="overflow-hidden rounded-lg poster-shadow transition-transform duration-300 transform group-hover:scale-[1.02]">
         <div className="relative aspect-[2/3] bg-halo-800 overflow-hidden">
-          {posterUrl ? (
-            <>
-              <div className={`absolute inset-0 bg-halo-800 ${imageLoaded ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`} />
               <img
-                src={posterUrl}
+                ref={imgRef}
+                src={imageSrc}
                 alt={title}
-                className={`w-full h-full object-cover object-center transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                onLoad={() => setImageLoaded(true)}
+                className={`w-full h-full object-cover object-center transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
               />
-            </>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-halo-800 text-white/50">
-              <span className="text-sm">No Image</span>
-            </div>
-          )}
           
           {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

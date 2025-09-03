@@ -5,7 +5,11 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import SearchBar from './SearchBar';
 import WatchlistNavLink from './WatchlistNavLink';
 import AdvancedSearch from './AdvancedSearch';
+import LanguageSelector from './LanguageSelector';
+import NotificationCenter from './NotificationCenter';
+import UserStatsModal from './UserStatsModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { BarChart } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
@@ -14,6 +18,7 @@ const Navbar: React.FC = () => {
   const isMobile = useIsMobile();
   const [searchOpen, setSearchOpen] = useState(false);
   const [advancedSearchOpen, setAdvancedSearchOpen] = useState(false);
+  const [statsModalOpen, setStatsModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,6 +82,18 @@ const Navbar: React.FC = () => {
           {/* Search and Mobile Menu Toggle */}
           <div className="flex items-center space-x-4">
             <WatchlistNavLink />
+            
+            <NotificationCenter />
+            
+            <button 
+              onClick={() => setStatsModalOpen(true)}
+              className="p-2 rounded-full transition-all hover:bg-white/10 text-white"
+              aria-label="View Statistics"
+            >
+              <BarChart size={20} className="text-white" />
+            </button>
+            
+            <LanguageSelector />
             
             <button 
               onClick={() => setAdvancedSearchOpen(true)}
@@ -158,6 +175,12 @@ const Navbar: React.FC = () => {
           <AdvancedSearch onClose={() => setAdvancedSearchOpen(false)} />
         </DialogContent>
       </Dialog>
+      
+      {/* User Stats Modal */}
+      <UserStatsModal 
+        isOpen={statsModalOpen}
+        onClose={() => setStatsModalOpen(false)}
+      />
     </nav>
   );
 };

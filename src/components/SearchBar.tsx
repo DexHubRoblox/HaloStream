@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search as SearchIcon, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Media, searchMedia, getImageUrl } from '@/utils/api';
 import { genres, detectGenreFromQuery } from '@/utils/genres';
+import { addToSearchHistory, getRecentSearches } from '@/utils/searchHistory';
 
 interface SearchBarProps {
   onClose?: () => void;
@@ -14,6 +14,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Media[]>([]);
   const [genreSuggestions, setGenreSuggestions] = useState<string[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
 
   useEffect(() => {
     inputRef.current?.focus();
+    setRecentSearches(getRecentSearches());
 
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -79,6 +81,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
       const data = await searchMedia(query);
       setResults(data.results.slice(0, 6));
       setShowResults(true);
+      
+      // Add to search history
+      addToSearchHistory(query, data.results.length);
     } catch (error) {
       console.error('Search error:', error);
     } finally {
@@ -93,6 +98,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (query.trim() !== '') {
+      addToSearchHistory(query.trim(), results.length);
       navigate(`/search?q=${encodeURIComponent(query.trim())}`);
       setShowResults(false);
       if (onClose) onClose();
@@ -107,6 +113,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
   };
 
   const handleGenreClick = (genreName: string) => {
+    addToSearchHistory(genreName, 0);
     navigate(`/search?q=${encodeURIComponent(genreName)}`);
     setShowResults(false);
     if (onClose) onClose();
@@ -115,7 +122,15 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
     setQuery('');
     setResults([]);
     setGenreSuggestions([]);
+    setRecentSearches(getRecentSearches());
     inputRef.current?.focus();
+  };
+
+  const handleRecentSearchClick = (searchTerm: string) => {
+    setQuery(searchTerm);
+    navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+    setShowResults(false);
+    if (onClose) onClose();
   };
 
   return (
@@ -147,12 +162,31 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
       </form>
 
       {/* Search Results Dropdown */}
-      {showResults && (results.length > 0 || genreSuggestions.length > 0) && (
+      {showResults && (results.length > 0 || genreSuggestions.length > 0 || (query === '' && recentSearches.length > 0)) && (
         <div 
           ref={resultsRef}
           className="absolute top-full left-0 right-0 mt-2 bg-gray-900/90 backdrop-blur-lg rounded-lg shadow-lg overflow-hidden z-50 animate-scale-in border border-gray-700"
         >
           <div className="max-h-80 overflow-y-auto">
+            {/* Recent Searches (shown when input is empty) */}
+            {query === '' && recentSearches.length > 0 && (
+              <>
+                <div className="px-3 py-2 text-xs font-semibold text-gray-400 bg-gray-800/20">
+                  RECENT SEARCHES
+                </div>
+                {recentSearches.map((searchTerm, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleRecentSearchClick(searchTerm)}
+                    className="flex items-center p-3 hover:bg-gray-800 transition-colors cursor-pointer"
+                  >
+                    <SearchIcon size={16} className="text-gray-400 mr-3" />
+                    <span className="text-white">{searchTerm}</span>
+                  </div>
+                ))}
+              </>
+            )}
+            
             {/* Genre Suggestions */}
             {genreSuggestions.length > 0 && (
               <>
@@ -169,8 +203,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
                       <span className="text-white text-xs font-bold">{genreName.slice(0, 2).toUpperCase()}</span>
                     </div>
                     <div className="ml-3 flex-1 text-left">
-                      <p className="font-medium text-white">{title}</p>
-                      <p className="text-xs text-gray-400 capitalize">{mediaType}</p>
+                      <p className="font-medium text-white">{genreName}</p>
+                      <p className="text-xs text-gray-400 capitalize">genre</p>
                     </div>
                   </div>
                 ))}
@@ -213,6 +247,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
                 </div>
               );
             })}
+            {/* Show "View all results" only when there are actual search results */}
+            {query && results.length > 0 && (
             <div 
               className="bg-gray-800/20 p-2 text-center cursor-pointer hover:bg-gray-800"
               onClick={() => {
@@ -223,6 +259,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
             >
               <p className="text-sm font-medium text-white/80">View all results</p>
             </div>
+            )}
           </div>
         </div>
       )}
