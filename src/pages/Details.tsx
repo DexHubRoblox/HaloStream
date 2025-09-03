@@ -6,11 +6,13 @@ import Navbar from '@/components/Navbar';
 import MediaGrid from '@/components/MediaGrid';
 import TrailerModal from '@/components/TrailerModal';
 import RatingModal from '@/components/RatingModal';
+import CastSection from '@/components/CastSection';
 import { Button } from '@/components/ui/button';
-import { Play, Calendar, Clock, Star, Video, ThumbsUp } from 'lucide-react';
+import { Play, Calendar, Clock, Star, Video, ThumbsUp, Share } from 'lucide-react';
 import Loader from '@/components/Loader';
 import WatchlistButton from '@/components/WatchlistButton';
 import { getUserRating } from '@/utils/userRatings';
+import { shareMedia } from '@/utils/sharing';
 
 const Details: React.FC = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -53,6 +55,12 @@ const Details: React.FC = () => {
   const handleWatch = () => {
     if (type && id) {
       navigate(`/watch/${type}/${id}`);
+    }
+  };
+
+  const handleShare = async () => {
+    if (details) {
+      await shareMedia(mediaForWatchlist);
     }
   };
 
@@ -251,9 +259,22 @@ const Details: React.FC = () => {
                 variant="button" 
                 size={18}
               />
+              
+              <Button 
+                onClick={handleShare}
+                variant="outline"
+                size="lg" 
+                className="rounded-full border-gray-400 bg-gray-600/50 backdrop-blur-sm hover:bg-gray-600/70 transition-all px-8"
+              >
+                <Share size={18} className="mr-2" /> 
+                Share
+              </Button>
             </div>
           </div>
         </div>
+        
+        {/* Cast & Crew */}
+        <CastSection mediaId={id!} mediaType={type as 'movie' | 'tv'} />
         
         {/* Recommendations */}
         {recommendations.length > 0 && (

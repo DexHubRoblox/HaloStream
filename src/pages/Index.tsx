@@ -8,6 +8,12 @@ import Collections from '@/components/Collections';
 import StreamingCollection from '@/components/StreamingCollection';
 import GenreBrowser from '@/components/GenreBrowser';
 import ContinueWatching from '@/components/ContinueWatching';
+import TrendingBanner from '@/components/TrendingBanner';
+import RandomPicker from '@/components/RandomPicker';
+import RecentlyViewed from '@/components/RecentlyViewed';
+import PersonalizedRecommendations from '@/components/PersonalizedRecommendations';
+import DecadeCollections from '@/components/DecadeCollections';
+import SeasonalCollections from '@/components/SeasonalCollections';
 import { streamingCollections } from '@/utils/collections';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
@@ -61,10 +67,23 @@ const Index: React.FC = () => {
       <Navbar />
       <Hero />
       
+      {/* Trending This Week Banner */}
+      <TrendingBanner />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
         <ContinueWatching />
         
+        <RecentlyViewed />
+        
+        <PersonalizedRecommendations />
+        
+        <RandomPicker />
+        
         <Collections />
+        
+        <SeasonalCollections />
+        
+        <DecadeCollections />
         
         <GenreBrowser />
         

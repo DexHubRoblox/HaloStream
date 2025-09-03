@@ -14,6 +14,7 @@ import Search from "./pages/Search";
 import Watchlist from "./pages/Watchlist";
 import NotFound from "./pages/NotFound";
 import CollectionDetails from "./pages/CollectionDetails";
+import PersonDetails from "./pages/PersonDetails";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/search" element={<Search />} />
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/collection/:id" element={<CollectionDetails />} />
+          <Route path="/person/:id" element={<PersonDetails />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

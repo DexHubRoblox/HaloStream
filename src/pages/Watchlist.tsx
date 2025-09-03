@@ -4,7 +4,9 @@ import Navbar from '@/components/Navbar';
 import MediaGrid from '@/components/MediaGrid';
 import { getWatchlist, WATCHLIST_UPDATED_EVENT } from '@/utils/watchlist';
 import { Media } from '@/utils/api';
-import { BookmarkX } from 'lucide-react';
+import { BookmarkX, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { exportWatchlist } from '@/utils/sharing';
 
 const Watchlist: React.FC = () => {
   const [watchlist, setWatchlist] = useState<Media[]>([]);
@@ -25,13 +27,29 @@ const Watchlist: React.FC = () => {
       window.removeEventListener('storage', updateWatchlist);
     };
   }, []);
+
+  const handleExportWatchlist = () => {
+    exportWatchlist(watchlist);
+  };
   
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       
       <div className="pt-24 pb-16 px-6 md:px-12 max-w-7xl mx-auto">
-        <h1 className="text-3xl font-black mb-4 text-white">My Watchlist</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-black text-white">My Watchlist</h1>
+          {watchlist.length > 0 && (
+            <Button
+              onClick={handleExportWatchlist}
+              variant="outline"
+              className="border-gray-600 text-white hover:bg-gray-800"
+            >
+              <Download size={16} className="mr-2" />
+              Export Watchlist
+            </Button>
+          )}
+        </div>
         
         {watchlist.length === 0 ? (
           <div className="flex flex-col items-center justify-center mt-16 text-white/60">
