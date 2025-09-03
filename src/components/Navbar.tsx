@@ -5,7 +5,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import SearchBar from './SearchBar';
 import WatchlistNavLink from './WatchlistNavLink';
 import AdvancedSearch from './AdvancedSearch';
-import LanguageSelector from './LanguageSelector';
 import NotificationCenter from './NotificationCenter';
 import UserStatsModal from './UserStatsModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -92,8 +91,6 @@ const Navbar: React.FC = () => {
             >
               <BarChart size={20} className="text-white" />
             </button>
-            
-            <LanguageSelector />
             
             <button 
               onClick={() => setAdvancedSearchOpen(true)}
